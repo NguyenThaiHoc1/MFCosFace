@@ -1,0 +1,12 @@
+.idea/
+__pycache__/
+test.py
+test.ipynb
+venv
+
+Dataset
+
+man.ipynb
+test.ipynb
+test.py
+
