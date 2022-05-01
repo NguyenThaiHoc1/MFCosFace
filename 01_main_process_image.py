@@ -7,6 +7,7 @@
         - Alignment
 
 """
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -14,11 +15,24 @@ from pathlib import Path
 import cv2
 from matplotlib import pyplot as plt
 from tqdm import tqdm
+
 from ProcessingFace.Pipeline.pipelineface import PipelineFace
 from ProcessingFace.Pipeline.pipelinemask import PipelineMaskTheFace
 from Settings import config
 from Tensorflow.TFRecord import tfrecord
 from utlis.argsparse import parser_generator_mask
+
+
+log_path = Path('./log.txt')
+
+logging.basicConfig(filename='log.txt',
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
+
+file = open(log_path, "w")
+file.close()
 
 
 class ImageClass(object):
@@ -70,9 +84,16 @@ class ImageClass(object):
 
 def test():
     pipeline = PipelineFace(output_size=128)
-    image = ImageClass(filepath='./Dataset/raw/lfw/Valery_Giscard_dEstaing/Valery_Giscard_dEstaing_0001.jpg')
+    image = ImageClass(filepath='./Dataset/raw/lfw/Mel_Brooks/Mel_Brooks_0002.jpg')
     face = pipeline(image.np_image)
-    plt.imshow(face[0])
+    plt.imshow(face[1])
+    plt.show()
+
+    pipeline_mask = PipelineMaskTheFace()
+
+    list_face_mask, _, _, _ = pipeline_mask.active(face[1], mask_type='surgical')
+
+    plt.imshow(list_face_mask[0])
     plt.show()
 
 
@@ -140,28 +161,35 @@ def main():
         if not align_save_path.exists():
             os.makedirs(align_save_path)
 
-        face = pipeline(np_image)
+        try:
 
-        plt.imsave(new_filename_align, face[0])
+            face = pipeline(np_image)
 
-        if not args.check_mask:
-            break
+            plt.imsave(new_filename_align, face[0])
 
-        list_type_mask = ['cloth', 'surgical', 'surgical_blue']
+            if not args.check_mask:
+                break
 
-        abs_path_id_mask = path_result_mask / name_folder
+            list_type_mask = ['cloth', 'surgical', 'surgical_blue']
 
-        if not abs_path_id_mask.exists():
-            os.makedirs(abs_path_id_mask)
+            abs_path_id_mask = path_result_mask / name_folder
 
-        for type_mask in list_type_mask:
-            list_face_mask, _, _, _ = pipeline_mask.active(face[0], mask_type=type_mask)
+            if not abs_path_id_mask.exists():
+                os.makedirs(abs_path_id_mask)
 
-            base_filename_mask = f'mask-{type_mask}_' + file_name + '.jpg'
+            for type_mask in list_type_mask:
+                list_face_mask, _, _, _ = pipeline_mask.active(face[0], mask_type=type_mask)
 
-            abs_path_mask_filename = abs_path_id_mask / base_filename_mask
+                base_filename_mask = f'mask-{type_mask}_' + file_name + '.jpg'
 
-            plt.imsave(abs_path_mask_filename, list_face_mask[0])
+                abs_path_mask_filename = abs_path_id_mask / base_filename_mask
+
+                plt.imsave(abs_path_mask_filename, list_face_mask[0])
+
+        except Exception as ex:
+            logging.info(f"Error: {name_folder} - {abs_path}")
+            pass
+
 
 if __name__ == '__main__':
     main()
