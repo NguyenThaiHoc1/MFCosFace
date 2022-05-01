@@ -165,8 +165,6 @@ def main():
 
             face = pipeline(np_image)
 
-            plt.imsave(new_filename_align, face[0])
-
             if not args.check_mask:
                 break
 
@@ -185,6 +183,8 @@ def main():
                 abs_path_mask_filename = abs_path_id_mask / base_filename_mask
 
                 plt.imsave(abs_path_mask_filename, list_face_mask[0])
+
+            plt.imsave(new_filename_align, face[0])
 
         except Exception as ex:
             logging.info(f"Error: {name_folder} - {abs_path}")
