@@ -22,21 +22,21 @@ if __name__ == '__main__':
     args = parser_record()
 
     # Create TFRecord
-    # tfrecord.TFRecordData().create(path_dataset=args.path, path_output_record=args.output_dir)
+    tfrecord.TFRecordData().create(path_dataset=args.path, path_output_record=args.output_dir)
 
     # Load TFRecord
-    dataset = tfrecord.TFRecordData().load(args.output_dir, binary_img=True, is_crop=False,
-                                           shuffle=True, batch_size=32)
+    # dataset = tfrecord.TFRecordData().load(args.output_dir, binary_img=True, is_crop=False,
+    #                                        shuffle=True, batch_size=32)
 
     # for idx in dataset:
     #     print(idx)
 
-    iter_train = iter(dataset)
-    count = 0
-    while True:
-        _training_step(iter_train)
-        count += 1
-        print(count)
+    # iter_train = iter(dataset)
+    # count = 0
+    # while True:
+    #     _training_step(iter_train)
+    #     count += 1
+    #     print(count)
 
     # root = os.path.abspath(os.path.dirname(__file__))
     # dataset_path = os.path.join(root, "Dataset", "total", "mfr2")

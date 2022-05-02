@@ -22,7 +22,6 @@ from Settings import config
 from Tensorflow.TFRecord import tfrecord
 from utlis.argsparse import parser_generator_mask
 
-
 log_path = Path('./log.txt')
 
 logging.basicConfig(filename='log.txt',
@@ -84,14 +83,14 @@ class ImageClass(object):
 
 def test():
     pipeline = PipelineFace(output_size=128)
-    image = ImageClass(filepath='./Dataset/raw/lfw/Mel_Brooks/Mel_Brooks_0002.jpg')
+    image = ImageClass(filepath='./Dataset/raw/lfw/Saddam_Hussein/Saddam_Hussein_0008.jpg')
     face = pipeline(image.np_image)
-    plt.imshow(face[1])
+    plt.imshow(face[0])
     plt.show()
 
     pipeline_mask = PipelineMaskTheFace()
 
-    list_face_mask, _, _, _ = pipeline_mask.active(face[1], mask_type='surgical')
+    list_face_mask, _, _, _ = pipeline_mask.active(face[0], mask_type='surgical')
 
     plt.imshow(list_face_mask[0])
     plt.show()
@@ -190,6 +189,8 @@ def main():
             logging.info(f"Error: {name_folder} - {abs_path}")
             pass
 
+    logging.info("DONE")
+
 
 if __name__ == '__main__':
-    main()
+    test()

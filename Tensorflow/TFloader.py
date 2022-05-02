@@ -40,12 +40,17 @@ class DataLoader(object):
     @property
     def train(self):
         return TFRecordData().load(self.path_train, binary_img=self.binary_status,
-                                   is_crop=self.augmentation, shuffle=self.shuffle, batch_size=self.batch_size)
+                                   is_crop=self.augmentation,
+                                   reprocess=False,
+                                   shuffle=self.shuffle, batch_size=self.batch_size)
 
     @property
     def test(self):
         return TFRecordData().load(self.path_test, binary_img=self.binary_status,
-                                   is_crop=self.augmentation, shuffle=self.shuffle, batch_size=self.batch_size)
+                                   is_crop=self.augmentation,
+                                   reprocess=False,
+                                   shuffle=self.shuffle,
+                                   batch_size=self.batch_size)
 
     @property
     def steps_per_epoch_train(self):

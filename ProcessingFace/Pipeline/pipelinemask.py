@@ -28,6 +28,7 @@ class PipelineMaskTheFace(object):
         # step 1:
         origin_image = img.copy()
         bboxes = self.detector.active(img)
+
         masked_images = []
         mask_binary_array = []
         mask = []

@@ -45,6 +45,7 @@ def main():
                            save_path=config.CHECKPOINT_SAVE,
                            logs=config.LOGS_SAVE,
                            loss_type='Softmax')
+
     logging.info("Loading trainer done.")
 
     logging.info("Training ...")

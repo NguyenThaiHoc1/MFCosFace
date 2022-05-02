@@ -12,9 +12,9 @@ TRAIN_DATASET_RESULT_FOLDER = BASE_DATASET_FOLDER / 'result'
 
 # ############################################################################################
 
-TRAIN_DATASET = BASE_DIR / 'Dataset' / 'raw' / 'lfw.tfrecords'
+TRAIN_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
 
-TEST_DATASET = BASE_DIR / 'Dataset' / 'raw' / 'lfw.tfrecords'
+TEST_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
 
 CHECKPOINT_SAVE = BASE_DIR / 'Checkpoint'
 
@@ -22,9 +22,9 @@ LOGS_SAVE = BASE_DIR / 'Logs'
 
 MODEL_TYPE = 'NormHead'
 
-NUM_CLASSES = 5749
+NUM_CLASSES = 5739
 
-NUM_IMAGES = 13233
+NUM_IMAGES = 52832
 
 EMBEDDING_SIZE = 512
 
