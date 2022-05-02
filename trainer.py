@@ -43,6 +43,7 @@ class Trainer(object):
             raise ValueError("Pls ! checking loss type.")
         return loss_fn
 
+    @tf.function
     def _training_step(self, iter_train):
         inputs, labels = next(iter_train)
 
