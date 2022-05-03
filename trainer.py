@@ -5,6 +5,8 @@
 
     https://github.com/peteryuX/arcface-tf2/blob/dab13506a1b1d25346f0a8b6bf0130e19c3e33b3/modules/models.py#L75
 """
+import logging
+
 import tensorflow as tf
 from tensorflow.keras.metrics import Mean
 
@@ -47,6 +49,10 @@ class Trainer(object):
             raise ValueError("Pls ! checking loss type.")
         return loss_fn
 
+    def _save_weight(self, path_dir):
+        print('[*] save ckpt file!')
+        self.model.save_weights(path_dir)
+
     @tf.function
     def _training_step(self, inputs, labels):
 
@@ -73,7 +79,7 @@ class Trainer(object):
                 print(format_show.format(
                     self.current_epochs,
                     self.max_epochs,
-                    self.steps % self.loader.steps_per_epoch_train + 1,
+                    self.steps % self.loader.steps_per_epoch_train,
                     self.loader.steps_per_epoch_train,
                     total_loss.numpy(),
                     lr_training,
@@ -96,7 +102,19 @@ class Trainer(object):
 
             loss = self._train(train_dataset, show_detail=True)
 
+            # show information
             verb_str = "* Epoch {}/{}: loss={:.2f}"
             print(verb_str.format(self.current_epochs, self.max_epochs, loss))
 
-            self.current_epochs = self.steps // self.loader.steps_per_epoch_train + 1
+            # saving checkpoint
+            if self.current_epochs % 5:
+                name_save = 'e_{}_b_{}.ckpt'.format(self.current_epochs,
+                                                    self.steps % self.loader.steps_per_epoch,
+                                                    loss)
+                path_save = self.save_path / name_save
+                self._save_weight(path_dir=path_save)
+
+            # updating step and current epoch
+            self.current_epochs = self.steps // self.loader.steps_per_epoch_train
+
+            logging.info(verb_str.format(self.current_epochs, self.max_epochs, loss))
