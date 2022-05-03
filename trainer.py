@@ -6,6 +6,7 @@
     https://github.com/peteryuX/arcface-tf2/blob/dab13506a1b1d25346f0a8b6bf0130e19c3e33b3/modules/models.py#L75
 """
 import tensorflow as tf
+from tensorflow.keras.metrics import Mean
 
 from LossFunction.losses import SoftmaxLoss
 
@@ -31,6 +32,9 @@ class Trainer(object):
         self.optimizer = None
         self.loss_fn = None
 
+    def _setup_metrics(self, names):
+        self.metrics = {name: Mean() for name in names}
+
     def _setup_optimizer(self):
         self.learning_rate = tf.constant(self.lr)
         optimizer = tf.keras.optimizers.SGD(learning_rate=self.learning_rate, momentum=0.9, nesterov=True)
@@ -44,19 +48,42 @@ class Trainer(object):
         return loss_fn
 
     @tf.function
-    def _training_step(self, iter_train):
-        inputs, labels = next(iter_train)
+    def _training_step(self, inputs, labels):
 
         with tf.GradientTape() as tape:
-            logist = self.model(inputs, training=True)
+            logit = self.model(inputs, training=True)
             reg_loss = tf.reduce_sum(self.model.losses)  # regularization_loss
-            pred_loss = self.loss_fn(labels, logist)
+            pred_loss = self.loss_fn(labels, logit)
             total_loss = pred_loss + reg_loss
 
         grads = tape.gradient(total_loss, self.model.trainable_variables)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))
 
         return total_loss, pred_loss, reg_loss, self.optimizer.lr
+
+    def _train(self, iter_train, show_detail=False):
+        loss_sum = []
+        format_show = 'Epoch {}/{}: {}/{}, loss={:.2f}, lr={:.4f}'
+        for idx in range(self.loader.steps_per_epoch_train):
+            inputs, label = next(iter_train)
+            total_loss, pred_loss, reg_loss, lr_training = self._training_step(inputs, label)
+            loss_sum.append(total_loss.numpy())
+
+            if show_detail:
+                print(format_show.format(
+                    self.current_epochs,
+                    self.max_epochs,
+                    self.steps % self.loader.steps_per_epoch_train + 1,
+                    self.loader.steps_per_epoch_train,
+                    total_loss.numpy(),
+                    lr_training,
+                ))
+
+            self.steps += 1
+
+        cast_list_loss = tf.cast(loss_sum, dtype=tf.float32)
+        mean_loss = tf.reduce_mean(cast_list_loss)
+        return mean_loss
 
     def training(self):
         self.optimizer = self._setup_optimizer()
@@ -65,15 +92,11 @@ class Trainer(object):
         train_dataset = iter(self.loader.train)
 
         while self.current_epochs < self.max_epochs:
-            total_loss, pred_loss, reg_loss, lr_training = self._training_step(iter_train=train_dataset)
+            self._setup_metrics(names=['reg_loss', 'pred_loss', 'total_loss'])
 
-            # if self.steps % 5 == 0:
-            verb_str = "Epoch {}/{}: {}/{}, loss={:.2f}, lr={:.4f}"
-            print(verb_str.format(self.current_epochs, self.max_epochs,
-                                  self.steps % self.loader.steps_per_epoch_train + 1,
-                                  self.loader.steps_per_epoch_train,
-                                  total_loss.numpy(),
-                                  self.learning_rate.numpy()))
+            loss = self._train(train_dataset, show_detail=True)
 
-            self.steps += 1
+            verb_str = "* Epoch {}/{}: loss={:.2f}"
+            print(verb_str.format(self.current_epochs, self.max_epochs, loss))
+
             self.current_epochs = self.steps // self.loader.steps_per_epoch_train + 1
