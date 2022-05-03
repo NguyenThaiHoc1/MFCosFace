@@ -18,7 +18,7 @@ TEST_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
 
 CHECKPOINT_SAVE = BASE_DIR / 'Checkpoint'
 
-LOGS_SAVE = BASE_DIR / 'Logs'
+LOGS_SAVE = BASE_DIR / 'Logs' / 'logs.txt'
 
 MODEL_TYPE = 'NormHead'
 
