@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 import tensorflow as tf
 
@@ -27,7 +28,7 @@ def load_checkpoint(path_checkpoint, model, steps_per_epoch):
         epochs, steps = get_ckpt_inf(ckpt_path=checkpoint_path, steps_per_epoch=steps_per_epoch)
     else:
         print('[*] training from scratch.')
-        epochs, steps = 1, 0
+        epochs, steps = 1, 1
     return epochs, steps
 
 
@@ -43,3 +44,17 @@ def get_num_samples(path):
             print(filename)
             count += 1
     return count
+
+
+def check_folder(path):
+    if path.exists():
+        shutil.rmtree(path=path)
+        os.makedirs(path)
+    else:
+        os.makedirs(path)
+
+
+def copy(origin_folder, dist_folder):
+    for filename in origin_folder.glob('*.jpg'):
+        abs_source = origin_folder / filename
+        shutil.copy(abs_source, dist_folder)
