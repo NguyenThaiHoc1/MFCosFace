@@ -1,23 +1,9 @@
 import os
-import shutil
 
 from tqdm import tqdm
 
 from Settings import config
-
-
-def check_folder(path):
-    if path.exists():
-        shutil.rmtree(path=path)
-        os.makedirs(path)
-    else:
-        os.makedirs(path)
-
-
-def copy(origin_folder, dist_folder):
-    for filename in origin_folder.glob('*.jpg'):
-        abs_source = origin_folder / filename
-        shutil.copy(abs_source, dist_folder)
+from utlis import utlis
 
 
 def merge():
@@ -28,9 +14,7 @@ def merge():
     dataset_merge = config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
 
     # check folder
-    check_folder(dataset_merge)
-
-    list_name_mask = os.listdir(dataset_1)
+    utlis.check_folder(dataset_merge)
 
     list_name_align = os.listdir(dataset_2)
 
@@ -46,11 +30,11 @@ def merge():
 
         abs_path_merge = dataset_merge / id_name
 
-        check_folder(abs_path_merge)
+        utlis.check_folder(abs_path_merge)
 
         # align
-        copy(source_path_align, abs_path_merge)
-        copy(source_path_mask, abs_path_merge)
+        utlis.copy(source_path_align, abs_path_merge)
+        utlis.copy(source_path_mask, abs_path_merge)
 
 
 if __name__ == '__main__':
