@@ -60,6 +60,7 @@ def main():
                            current_epochs=current_epochs,
                            max_epochs=config.MAX_EPOCHS,
                            learning_rate=config.LEARNING_RATE,
+                           tensorboard_path=config.TENSORBOARD_SAVE,
                            save_path=config.CHECKPOINT_SAVE,
                            logs=config.LOGS_SAVE,
                            loss_type='Softmax')

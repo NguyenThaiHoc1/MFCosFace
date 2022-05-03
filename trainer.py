@@ -17,7 +17,8 @@ class Trainer(object):
 
     def __init__(self, loader, model, current_epochs,
                  max_epochs, steps, learning_rate,
-                 logs, save_path, loss_type):
+                 logs, save_path, tensorboard_path,
+                 loss_type):
         self.loader = loader
         self.model = model
         self.loss_type = loss_type
@@ -29,10 +30,13 @@ class Trainer(object):
         self.lr = learning_rate
         self.logs = logs
         self.save_path = save_path
+        self.tensorboard_path = tensorboard_path
 
         # -------- setting up hyper parameter -------
         self.optimizer = None
         self.loss_fn = None
+
+        self.writer_train = self._setup_writer(name_folder='train')
 
     def _setup_metrics(self, names):
         self.metrics = {name: Mean() for name in names}
@@ -52,6 +56,11 @@ class Trainer(object):
     def _save_weight(self, path_dir):
         print('[*] save ckpt file!')
         self.model.save_weights(path_dir)
+
+    def _setup_writer(self, name_folder):
+        path_writer = self.tensorboard_path / name_folder
+        summary_writer = tf.summary.create_file_writer(path_writer)
+        return summary_writer
 
     @tf.function
     def _training_step(self, inputs, labels):
@@ -114,7 +123,13 @@ class Trainer(object):
                 path_save = self.save_path / name_save
                 self._save_weight(path_dir=path_save)
 
+            # writing visualization
+            with self.writer_train.as_default():
+                tf.summary.scalar('loss/total_loss', loss, step=self.current_epochs)
+                tf.summary.scalar('loss/learning rate', self.optimizer.lr, step=self.current_epochs)
+
             # updating step and current epoch
             self.current_epochs = self.steps // self.loader.steps_per_epoch_train
 
+            # writen logs
             logging.info(verb_str.format(self.current_epochs, self.max_epochs, loss))
