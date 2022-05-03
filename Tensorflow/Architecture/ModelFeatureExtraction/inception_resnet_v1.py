@@ -9,10 +9,9 @@ from tensorflow.keras import Model, Sequential
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import BatchNormalization, Activation
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Concatenate, add, Lambda, GlobalAveragePooling2D, Dropout
-from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.layers import Dense, Input, Layer, GlobalMaxPooling2D, Reshape
 
 from Settings import config
-from Tensorflow.Architecture.AttentionArchitecture.cbam import channel_attention, spatial_attention
 from Tensorflow.Architecture.utlis import utlis
 
 
@@ -42,6 +41,50 @@ def convolution2d_block(outputs, kernel, strides=1, padding="same", activation="
 
     return sequence_block
 
+
+######################## CBAM ########################
+
+class ChannelAttention(Layer):
+    def __init__(self, in_planes, ratio=16):
+        super(ChannelAttention, self).__init__()
+        self.avg = GlobalAveragePooling2D()
+        self.max = GlobalMaxPooling2D()
+        self.conv1 = Conv2D(in_planes // ratio, kernel_size=1, strides=1, padding='same',
+                            kernel_regularizer=regular(5e-4),
+                            use_bias=True, activation=tf.nn.relu)
+        self.conv2 = Conv2D(in_planes, kernel_size=1, strides=1, padding='same',
+                            kernel_regularizer=regular(5e-4),
+                            use_bias=True)
+
+    def call(self, inputs, *args, **kwargs):
+        avg = self.avg(inputs)
+        max = self.max(inputs)
+        avg = Reshape((1, 1, avg.shape[1]))(avg)  # shape (None, 1, 1 feature)
+        max = Reshape((1, 1, max.shape[1]))(max)  # shape (None, 1, 1 feature)
+        avg_out = self.conv2(self.conv1(avg))
+        max_out = self.conv2(self.conv1(max))
+        out = avg_out + max_out
+        out = tf.nn.sigmoid(out)
+
+        return out
+
+
+class SpatialAttention(Layer):
+    def __init__(self, kernel_size=7):
+        super(SpatialAttention, self).__init__()
+        self.conv1 = convolution2d_block(outputs=1, kernel=kernel_size, strides=1,
+                                         use_bias=False, activation='sigmoid')
+
+    def call(self, inputs, *args, **kwargs):
+        avg_out = tf.reduce_mean(inputs, axis=3)
+        max_out = tf.reduce_max(inputs, axis=3)
+        out = tf.stack([avg_out, max_out], axis=3)
+        out = self.conv1(out)
+
+        return out
+
+
+#######################################################
 
 class InceptionResnetBlock35(Model):
 
@@ -145,16 +188,20 @@ class InceptionResnetBlock(Model):
 
         self.activation = Activation(activation)
 
+        if self.attention_module:
+            self.channel_att = ChannelAttention(self.number_channel)
+            self.spatial_att = SpatialAttention()
+
     def call(self, inputs, training=False, *args, **kwargs):
         out = self.inception_res_block(inputs)
+
         out = self.mixed(out)
 
         out = self.up_1(out)
 
-        # CBAM
         if self.attention_module:
-            out = channel_attention(out, ratio=8) * out
-            out = spatial_attention(out) * out
+            out = self.channel_att(out) * out
+            out = self.spatial_att(out) * out
 
         out = self.up_2([inputs, out])
 
@@ -317,7 +364,10 @@ class InceptionResNetV1(Model):
 
         # 5x Block35 (Inception-ResNet-A block):
         self.block35 = Sequential([
-            InceptionResnetBlock(scale=0.17, type_block="Block35", activation="relu", name=f"Block35_{idx}")
+            InceptionResnetBlock(scale=0.17, type_block="Block35",
+                                 activation="relu",
+                                 attention_module=True,
+                                 name=f"Block35_{idx}")
             for idx in range(1, 6)
         ], name="Block35")
 
@@ -326,7 +376,10 @@ class InceptionResNetV1(Model):
 
         # 10x Block17 (Inception-ResNet-B block)
         self.block17 = Sequential([
-            InceptionResnetBlock(scale=0.1, type_block="Block17", activation="relu", name=f"Block17_{idx}")
+            InceptionResnetBlock(scale=0.1, type_block="Block17",
+                                 activation="relu",
+                                 attention_module=True,
+                                 name=f"Block17_{idx}")
             for idx in range(1, 11)
         ], name="Block17")
 
@@ -335,7 +388,10 @@ class InceptionResNetV1(Model):
 
         # 5x Block8 (Inception-ResNet-C block)
         self.block8 = Sequential([
-            InceptionResnetBlock(scale=0.2, type_block="Block8", activation="relu", name=f"Block8_{idx}")
+            InceptionResnetBlock(scale=0.2, type_block="Block8",
+                                 activation="relu",
+                                 attention_module=True,
+                                 name=f"Block8_{idx}")
             for idx in range(1, 6)
         ], name="Block8")
 
