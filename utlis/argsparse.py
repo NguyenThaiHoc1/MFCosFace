@@ -3,7 +3,7 @@ import argparse
 
 def parser_record():
     parser = argparse.ArgumentParser(description='Parameter for create TFRecord.')
-    parser.add_argument('--path', type=str, required=True,
+    parser.add_argument('--path', required=True, nargs='+',
                         help='Where contains dataset')
     parser.add_argument('--output_dir', type=str, required=True,
                         help='Where file tfrecord')

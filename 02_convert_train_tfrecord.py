@@ -22,7 +22,10 @@ if __name__ == '__main__':
     args = parser_record()
 
     # Create TFRecord
-    tfrecord.TFRecordData().create(path_dataset=args.path, path_output_record=args.output_dir)
+    for file_path in args.path:
+        tfrecord.TFRecordData().create(path_dataset=file_path)
+
+    tfrecord.TFRecordData().active(path_output_record=args.output_dir)
 
     # Load TFRecord
     # dataset = tfrecord.TFRecordData().load(args.output_dir, binary_img=True, is_crop=False,
