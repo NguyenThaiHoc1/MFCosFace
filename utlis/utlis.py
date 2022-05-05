@@ -56,5 +56,8 @@ def check_folder(path):
 
 def copy(origin_folder, dist_folder):
     for filename in origin_folder.glob('*.jpg'):
+        check_store = str(filename.stem)[0]
+        if check_store == '.':
+            continue
         abs_source = origin_folder / filename
         shutil.copy(abs_source, dist_folder)

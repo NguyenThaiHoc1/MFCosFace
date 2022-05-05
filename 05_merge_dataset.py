@@ -1,5 +1,5 @@
 import os
-
+from pathlib import Path
 from tqdm import tqdm
 
 from Settings import config
@@ -7,11 +7,11 @@ from utlis import utlis
 
 
 def merge():
-    dataset_1 = config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'mask'
+    dataset_1 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'mask'
 
-    dataset_2 = config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'align'
+    dataset_2 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'align'
 
-    dataset_merge = config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
+    dataset_merge = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'merge'
 
     # check folder
     utlis.check_folder(dataset_merge)
@@ -19,6 +19,9 @@ def merge():
     list_name_align = os.listdir(dataset_2)
 
     for id_name in tqdm(list_name_align):
+
+        if id_name[0] == '.':
+            continue
 
         source_path_align = dataset_2 / id_name
 
