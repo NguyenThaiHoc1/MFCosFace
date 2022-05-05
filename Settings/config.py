@@ -14,7 +14,7 @@ TRAIN_DATASET_RESULT_FOLDER = BASE_DATASET_FOLDER / 'result'
 
 TRAIN_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
 
-TEST_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
+VAL_DATASET = BASE_DIR / 'Dataset' / 'result' / 'lfw' / 'lfw_masked.tfrecords'
 
 CHECKPOINT_SAVE = BASE_DIR / 'Checkpoint'
 

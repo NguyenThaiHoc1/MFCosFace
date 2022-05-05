@@ -1,10 +1,10 @@
 import os
-
+from pathlib import Path
 from Settings import config
 
 if __name__ == '__main__':
 
-    dataset = config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
+    dataset = Path('/Volumes/Ventoy') / 'Data' / 'data_fujinet' # config.TRAIN_DATASET_RAW_FOLDER  #  # config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
     extentions_img = '*.jpg'
     dict_count = {
         'num_classes': 0,
