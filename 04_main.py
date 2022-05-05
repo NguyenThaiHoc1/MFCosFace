@@ -31,7 +31,7 @@ def main():
     # Data
     logging.info("* STEP 1: Creating loader ...")
     loader = DataLoader(path_train=config.TRAIN_DATASET,
-                        path_test=config.TEST_DATASET,
+                        path_validate=config.VAL_DATASET,
                         batch_size=config.BATCH_SIZE,
                         shuffle=True,
                         binary_status=True,

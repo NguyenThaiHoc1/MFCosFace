@@ -109,27 +109,27 @@ class Trainer(object):
         while self.current_epochs < self.max_epochs:
             self._setup_metrics(names=['reg_loss', 'pred_loss', 'total_loss'])
 
-            loss = self._train(train_dataset, show_detail=True)
+            loss_train = self._train(train_dataset, show_detail=True)
 
             # show information
-            verb_str = "* Epoch {}/{}: loss={:.2f}"
-            print(verb_str.format(self.current_epochs, self.max_epochs, loss))
+            verb_str = "* {} Epoch {}/{}: loss={:.2f}"
+            print(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
 
             # saving checkpoint
             if self.current_epochs % 5:
                 name_save = 'e_{}_b_{}.ckpt'.format(self.current_epochs,
                                                     self.steps % self.loader.steps_per_epoch,
-                                                    loss)
+                                                    loss_train)
                 path_save = self.save_path / name_save
                 self._save_weight(path_dir=path_save)
 
             # writing visualization
             with self.writer_train.as_default():
-                tf.summary.scalar('loss/total_loss', loss, step=self.current_epochs)
+                tf.summary.scalar('loss/total_loss', loss_train, step=self.current_epochs)
                 tf.summary.scalar('loss/learning rate', self.optimizer.lr, step=self.current_epochs)
 
             # updating step and current epoch
             self.current_epochs = self.steps // self.loader.steps_per_epoch_train
 
             # writen logs
-            logging.info(verb_str.format(self.current_epochs, self.max_epochs, loss))
+            logging.info(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
