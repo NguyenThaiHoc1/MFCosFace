@@ -118,8 +118,7 @@ class Trainer(object):
             # saving checkpoint
             if self.current_epochs % 2:
                 name_save = 'e_{}_b_{}.ckpt'.format(self.current_epochs,
-                                                    self.steps % self.loader.steps_per_epoch_train,
-                                                    loss_train)
+                                                    self.steps % self.loader.steps_per_epoch_train)
                 path_save = self.save_path / name_save
                 self._save_weight(path_dir=path_save)
 
