@@ -2,6 +2,7 @@ import glob
 import os
 import shutil
 
+import numpy as np
 import tensorflow as tf
 
 
@@ -61,3 +62,9 @@ def copy(origin_folder, dist_folder):
             continue
         abs_source = origin_folder / filename
         shutil.copy(abs_source, dist_folder)
+
+
+def l2_norm(embedings, axis=1):
+    norm = np.linalg.norm(embedings, axis=axis, keepdims=True)
+    output = embedings / norm
+    return output

@@ -352,7 +352,7 @@ class NormHead(Model):
 
 class InceptionResNetV1(Model):
 
-    def __init__(self, num_classes, embedding_size=512, model_type='NormHead', **kwargs):
+    def __init__(self, num_classes=None, embedding_size=512, model_type='NormHead', **kwargs):
         super(InceptionResNetV1, self).__init__(**kwargs)
         dropout_keep_prob = 0.8
         self.num_classes = num_classes
@@ -404,11 +404,12 @@ class InceptionResNetV1(Model):
         self.bn = BatchNormalization(momentum=0.995, epsilon=0.001, scale=False)
 
         # FC ---- for training
-        if self.model_type == 'NormHead':
-            self.fc = NormHead(name="Head_FullyConnection", num_classes=self.num_classes)
+        if self.num_classes is not None:
+            if self.model_type == 'NormHead':
+                self.fc = NormHead(name="Head_FullyConnection", num_classes=self.num_classes)
 
-        elif self.model_type == 'ArcHead':
-            raise NotImplementedError
+            elif self.model_type == 'ArcHead':
+                raise NotImplementedError
 
     def call(self, inputs, training=False, *args, **kwargs):
         out = self.stem(inputs)

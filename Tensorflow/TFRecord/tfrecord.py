@@ -48,6 +48,7 @@ class TFRecordData(object):
 
             TFRecordData.num_class_count += 1
         random.shuffle(TFRecordData.samples)
+
         logging.info(f"Reading data list done.")
 
         logging.info(f"Creating TFRecord file done.")
