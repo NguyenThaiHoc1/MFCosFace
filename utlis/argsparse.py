@@ -22,7 +22,6 @@ def parser_generator_mask():
 
 def parser_test():
     parser = argparse.ArgumentParser(description='Parameter for generator Mask.')
-    parser.add_argument('--test_tfrecord', type=str, required=True, help='file tfrecord test')
     parser.add_argument('--file_pair', type=str, required=True, help='path file pair')
     parser.add_argument('--folder_data', type=str, required=True, help='folder which contains image from pair file')
     return parser.parse_args()
