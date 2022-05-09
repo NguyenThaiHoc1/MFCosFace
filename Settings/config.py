@@ -12,9 +12,9 @@ TRAIN_DATASET_RESULT_FOLDER = BASE_DATASET_FOLDER / 'result'
 
 # ############################################################################################
 
-TRAIN_DATASET = BASE_DIR / 'Dataset' / 'data_cfp_lfw.tfrecords'
+TRAIN_DATASET = BASE_DIR / 'Dataset' / 'result' / 'data_cfp_lfw.tfrecords'
 
-VAL_DATASET = BASE_DIR / 'Dataset' / 'data_cfp_lfw.tfrecords'
+VAL_DATASET = BASE_DIR / 'Dataset' / 'result' / 'data_cfp_lfw.tfrecords'
 
 CHECKPOINT_SAVE = BASE_DIR / 'Checkpoint'
 
@@ -22,7 +22,7 @@ TENSORBOARD_SAVE = BASE_DIR / 'Visualization'
 
 LOGS_SAVE = BASE_DIR / 'Logs' / 'logs.txt'
 
-MODEL_TYPE = 'NormHead'
+MODEL_TYPE = 'ArcHead'  # NormHead
 
 NUM_CLASSES = 6239
 

@@ -63,6 +63,7 @@ def main():
                            tensorboard_path=config.TENSORBOARD_SAVE,
                            save_path=config.CHECKPOINT_SAVE,
                            logs=config.LOGS_SAVE,
+                           model_type=config.MODEL_TYPE,
                            loss_type='Softmax')
 
     logging.info("* STEP 4: Loading trainer done.")

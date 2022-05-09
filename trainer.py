@@ -18,10 +18,12 @@ class Trainer(object):
     def __init__(self, loader, model, current_epochs,
                  max_epochs, steps, learning_rate,
                  logs, save_path, tensorboard_path,
+                 model_type,
                  loss_type):
         self.loader = loader
         self.model = model
         self.loss_type = loss_type
+        self.model_type = model_type
 
         self.max_epochs = max_epochs
         self.current_epochs = current_epochs
@@ -64,9 +66,14 @@ class Trainer(object):
 
     @tf.function
     def _training_step(self, inputs, labels):
+        input_training = None
+        if self.model_type == 'ArcHead':
+            input_training = [inputs, labels]
+        elif self.model_type == 'NormHead':
+            input_training = inputs
 
         with tf.GradientTape() as tape:
-            logit = self.model(inputs, training=True)
+            logit = self.model(input_training, training=True)
             reg_loss = tf.reduce_sum(self.model.losses)  # regularization_loss
             pred_loss = self.loss_fn(labels, logit)
             total_loss = pred_loss + reg_loss

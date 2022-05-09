@@ -12,6 +12,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Concatenate, add, Lamb
 from tensorflow.keras.layers import Dense, Input, Layer, GlobalMaxPooling2D, Reshape
 
 from Settings import config
+from Tensorflow.Architecture.ArcHead.header import ArcFace
 from Tensorflow.Architecture.utlis import utlis
 
 
@@ -409,10 +410,22 @@ class InceptionResNetV1(Model):
                 self.fc = NormHead(name="Head_FullyConnection", num_classes=self.num_classes)
 
             elif self.model_type == 'ArcHead':
-                raise NotImplementedError
+                margin = 0.5
+                logist_scale = 64
+                self.fc = ArcFace(n_classes=self.num_classes, m=margin, s=logist_scale, regularizer=regular())
 
     def call(self, inputs, training=False, *args, **kwargs):
-        out = self.stem(inputs)
+        input_layer = None
+        if training:
+            if self.model_type == 'NormHead':
+                input_layer = inputs
+            elif self.model_type == 'ArcHead':
+                input_layer = inputs[0]
+                label_input = inputs[1]
+        else:
+            input_layer = inputs
+
+        out = self.stem(input_layer)
 
         out = self.block35(out)
 
@@ -433,7 +446,10 @@ class InceptionResNetV1(Model):
         out = self.bn(out)
 
         if training:
-            out = self.fc(out)
+            if self.model_type == 'NormHead':
+                out = self.fc(out)
+            elif self.model_type == 'ArcHead':
+                out = self.fc([out, label_input])
 
         return out
 
@@ -441,10 +457,11 @@ class InceptionResNetV1(Model):
 if __name__ == '__main__':
     tf.keras.backend.clear_session()
     model = InceptionResNetV1(num_classes=config.NUM_CLASSES,
-                              embedding_size=512,
+                              embedding_size=config.EMBEDDING_SIZE,
+                              model_type='ArcHead',
                               name="InceptionResNetV1")
-    model.build(input_shape=(None, 299, 299, 3))
-    model.summary()
+    # model.build(input_shape=(None, 299, 299, 3), )
+    # model.summary()
 
     # demo get layer
     # layer = utlis.get_layer_byname(model,
@@ -452,7 +469,7 @@ if __name__ == '__main__':
 
     # Test Output of Model
     x = Input(shape=(160, 160, 3))
-    out = model(x, training=True)
+    y = Input(shape=(1))
+    out = model([x, y], training=True)
     print(out)
-
     print("DONE ...")
