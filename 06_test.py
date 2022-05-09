@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     metrics = evaluate_lfw(distances=distances, labels=labels)
 
-    txt = "Accuracy on LFW: {:.4f}+-{:.4f}\nPrecision {:.4f}+-{:.4f}\nRecall {:.4f}+-{:.4f}" \
+    txt = "Accuracy on Fujinet: {:.4f}+-{:.4f}\nPrecision {:.4f}+-{:.4f}\nRecall {:.4f}+-{:.4f}" \
           "\nROC Area Under Curve: {:.4f}\nBest distance threshold: {:.2f}+-{:.2f}" \
           "\nTAR: {:.4f}+-{:.4f} @ FAR: {:.4f}".format(
         np.mean(metrics['accuracy']),
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         np.std(metrics['tar']),
         np.mean(metrics['far']))
 
-    title = 'LFW metrics'
+    title = 'Fujinet metrics'
     fig, axes = plt.subplots(1, 2)
     fig.suptitle(title, fontsize=15)
     fig.set_size_inches(14, 6)
