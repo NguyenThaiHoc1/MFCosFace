@@ -10,8 +10,8 @@ import logging
 import tensorflow as tf
 from tensorflow.keras.metrics import Mean
 
-from LossFunction.losses import SoftmaxLoss
-
+from LossFunction.losses import SoftmaxLoss, ArcfaceLoss
+from Settings import config
 
 class Trainer(object):
 
@@ -51,8 +51,8 @@ class Trainer(object):
     def _setup_loss(self):
         if self.loss_type == 'Softmax':
             loss_fn = SoftmaxLoss()
-        else:
-            raise ValueError("Pls ! checking loss type.")
+        elif self.loss_type == 'Arcloss':
+            loss_fn = ArcfaceLoss(margin=0.5, scale=64, n_classes=config.NUM_CLASSES)
         return loss_fn
 
     def _save_weight(self, path_dir):
@@ -66,14 +66,9 @@ class Trainer(object):
 
     @tf.function
     def _training_step(self, inputs, labels):
-        input_training = None
-        if self.model_type == 'ArcHead':
-            input_training = [inputs, labels]
-        elif self.model_type == 'NormHead':
-            input_training = inputs
 
         with tf.GradientTape() as tape:
-            logit = self.model(input_training, training=True)
+            logit = self.model(inputs, training=True)
             reg_loss = tf.reduce_sum(self.model.losses)  # regularization_loss
             pred_loss = self.loss_fn(labels, logit)
             total_loss = pred_loss + reg_loss
