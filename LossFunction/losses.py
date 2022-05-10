@@ -77,7 +77,7 @@ def ArcfaceLoss(margin, scale, n_classes):
         logits = y_pre * (1 - onehot_labels) + target_logits * onehot_labels
         logits = logits * scale
 
-        losses = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=logits)
+        losses = tf.nn.softmax_cross_entropy_with_logits(labels=onehot_labels, logits=logits)
 
         return tf.reduce_mean(losses)
 
