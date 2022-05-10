@@ -19,8 +19,8 @@ def create_log_summary(path):
 
 
 def check_all_folder():
-    if not config.CHECKPOINT_SAVE.exists():
-        os.makedirs(config.CHECKPOINT_SAVE)
+    if not config.CHECKPOINT_NEW_SAVE.exists():
+        os.makedirs(config.CHECKPOINT_NEW_SAVE)
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
 
     # Loading checkpoint (if you have)
     logging.info("* STEP 3: Loading checkpoint ...")
-    current_epochs, steps = load_checkpoint(path_checkpoint=config.CHECKPOINT_SAVE,
+    current_epochs, steps = load_checkpoint(path_checkpoint=config.CHECKPOINT_SAVED,
                                             model=model, steps_per_epoch=loader.steps_per_epoch_train)
     logging.info("* STEP 3: Loading checkpoint done.")
 
@@ -61,7 +61,7 @@ def main():
                            max_epochs=config.MAX_EPOCHS,
                            learning_rate=config.LEARNING_RATE,
                            tensorboard_path=config.TENSORBOARD_SAVE,
-                           save_path=config.CHECKPOINT_SAVE,
+                           save_path=config.CHECKPOINT_NEW_SAVE,
                            logs=config.LOGS_SAVE,
                            model_type=config.MODEL_TYPE,
                            loss_type='Arcloss')

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     model = InceptionResNetV1(embedding_size=config.EMBEDDING_SIZE, name="InceptionResNetV1")
 
     # Loading checkpoint (if you have)
-    path_checkpoint = Path('/Volumes/Ventoy/Data/Checkpoint/Inception_step_100')
+    path_checkpoint = Path('/Volumes/Ventoy/Data/Checkpoint/Inception_arcface_70')
     checkpoint_path = tf.train.latest_checkpoint(path_checkpoint)
     print('[*] load ckpt from {}.'.format(checkpoint_path))
     model.load_weights(checkpoint_path)

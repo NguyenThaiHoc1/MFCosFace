@@ -16,7 +16,9 @@ TRAIN_DATASET = BASE_DIR / 'Dataset' / 'result' / 'data_cfp_lfw.tfrecords'
 
 VAL_DATASET = BASE_DIR / 'Dataset' / 'result' / 'data_cfp_lfw.tfrecords'
 
-CHECKPOINT_SAVE = BASE_DIR / 'Checkpoint'
+CHECKPOINT_SAVED = BASE_DIR / 'Checkpoint'
+
+CHECKPOINT_NEW_SAVE = BASE_DIR / 'NEW_Checkpoint'
 
 TENSORBOARD_SAVE = BASE_DIR / 'Visualization'
 
@@ -32,6 +34,6 @@ EMBEDDING_SIZE = 512
 
 BATCH_SIZE = 128
 
-MAX_EPOCHS = 100
+MAX_EPOCHS = 1000
 
 LEARNING_RATE = 1e-3

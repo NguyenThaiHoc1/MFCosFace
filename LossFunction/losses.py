@@ -51,4 +51,21 @@ def ArcfaceLoss(margin, scale, n_classes):
 
         return tf.reduce_mean(losses)
 
-    return arcface_loss
+    def arcface_loss_v2(y_true, y_pre):
+        y_true = tf.one_hot(tf.cast(y_true, tf.int32), depth=n_classes)
+
+        original_target_logit = tf.clip_by_value(tf.math.reduce_sum(y_pre * y_true, axis=1), -1 + (1e-12),
+                                                 1 - (1e-12))
+        theta = tf.acos(original_target_logit)
+        marginal_target_logit = tf.cos(theta + margin)
+
+        one_hot = y_true
+        logits = y_pre + tf.multiply(one_hot,
+                                     tf.expand_dims(marginal_target_logit - original_target_logit, axis=1))
+        logits = logits * scale
+
+        losses = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=logits)
+
+        return tf.reduce_mean(losses)
+
+    return arcface_loss_v2

@@ -118,7 +118,7 @@ class Trainer(object):
             print(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
 
             # saving checkpoint
-            if self.current_epochs % 2:
+            if not self.current_epochs % 30:
                 name_save = 'e_{}_b_{}.ckpt'.format(self.current_epochs,
                                                     self.steps % self.loader.steps_per_epoch_train)
                 path_save = self.save_path / name_save
