@@ -1,7 +1,7 @@
 from math import pi
 
 import tensorflow as tf
-
+import tensorflow.keras.backend as K
 
 def SoftmaxLoss():
     """softmax loss"""
@@ -68,4 +68,17 @@ def ArcfaceLoss(margin, scale, n_classes):
 
         return tf.reduce_mean(losses)
 
-    return arcface_loss_v2
+    def arcface_loss_v3(y_true, y_pre):
+
+        onehot_labels = tf.one_hot(tf.cast(y_true, tf.int32), depth=n_classes)
+
+        theta = tf.acos(K.clip(y_pre, -1.0 + K.epsilon(), 1.0 - K.epsilon()))
+        target_logits = tf.cos(theta + margin)
+        logits = y_pre * (1 - onehot_labels) + target_logits * onehot_labels
+        logits = logits * scale
+
+        losses = tf.nn.softmax_cross_entropy_with_logits(labels=y_true, logits=logits)
+
+        return tf.reduce_mean(losses)
+
+    return arcface_loss_v3
