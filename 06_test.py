@@ -14,6 +14,7 @@ def preprocess(np_array):
     img = cv2.resize(np_array, (112, 112))
     img = img.astype(np.float32) / 255.
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
     return img
 
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     model = InceptionResNetV1(embedding_size=config.EMBEDDING_SIZE, name="InceptionResNetV1")
 
     # Loading checkpoint (if you have)
-    path_checkpoint = Path('/Volumes/Ventoy/Data/Checkpoint/Inception_arcface_70')
+    path_checkpoint = Path('/Volumes/Ventoy/Data/Checkpoint/NEW_Checkpoint')
     checkpoint_path = tf.train.latest_checkpoint(path_checkpoint)
     print('[*] load ckpt from {}.'.format(checkpoint_path))
     model.load_weights(checkpoint_path)

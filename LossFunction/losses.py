@@ -1,5 +1,5 @@
 from math import pi
-
+import math
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
@@ -81,4 +81,34 @@ def ArcfaceLoss(margin, scale, n_classes):
 
         return tf.reduce_mean(losses)
 
-    return arcface_loss_v3
+    def arcface_loss_v4(y_true, y_pre):
+
+        cos_t = y_pre
+
+        cos_m = tf.identity(math.cos(margin), name='cos_m')
+
+        sin_m = tf.identity(math.sin(margin), name='sin_m')
+
+        th = tf.identity(math.cos(math.pi - margin), name='th')
+
+        mm = tf.multiply(sin_m, margin, name='mm')
+
+        sin_t = tf.sqrt(1. - cos_t ** 2, name='sin_t')
+
+        cos_mt = tf.subtract(cos_t * cos_m, sin_t * sin_m, name='cos_mt')
+
+        cos_mt = tf.where(cos_t > th, cos_mt, cos_t - mm)
+
+        mask = tf.one_hot(tf.cast(y_true, tf.int32), depth=n_classes, name='one_hot_mask')
+
+        logists = tf.where(mask == 1., cos_mt, cos_t)
+
+        logists = tf.multiply(logists, scale, 'arcface_logist')
+
+        y_true = tf.cast(tf.reshape(y_true, [-1]), tf.int32)
+
+        ce = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=logists)
+
+        return tf.reduce_mean(ce)
+
+    return arcface_loss_v4

@@ -129,8 +129,8 @@ class Trainer(object):
                 tf.summary.scalar('loss/total_loss', loss_train, step=self.current_epochs)
                 tf.summary.scalar('loss/learning rate', self.optimizer.lr, step=self.current_epochs)
 
-            # updating step and current epochsteps_per_epoch
-            self.current_epochs = self.steps // self.loader.steps_per_epoch_train + 1
-
             # writen logs
             logging.info(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
+
+            # updating step and current epochsteps_per_epoch
+            self.current_epochs = self.steps // self.loader.steps_per_epoch_train + 1
