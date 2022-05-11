@@ -112,3 +112,28 @@ def ArcfaceLoss(margin, scale, n_classes):
         return tf.reduce_mean(ce)
 
     return arcface_loss_v4
+
+
+def CosfaceLoss(margin, scale, n_classes):
+
+    def cosface_loss(y_true, y_pred):
+
+        cos_theta = y_pred
+
+        mask = tf.one_hot(tf.cast(y_true, tf.int32), depth=n_classes, name='one_hot_mask')
+
+        target_logist = cos_theta - margin
+
+        logist = target_logist * mask + (1 - mask) * y_pred
+
+        logist *= scale
+
+        out = tf.nn.softmax(logist)
+
+        y_true = tf.cast(tf.reshape(y_true, [-1]), tf.int32)
+
+        ce = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=out)
+
+        return tf.reduce_mean(ce)
+
+    return cosface_loss

@@ -10,7 +10,7 @@ import logging
 import tensorflow as tf
 from tensorflow.keras.metrics import Mean
 
-from LossFunction.losses import SoftmaxLoss, ArcfaceLoss
+from LossFunction.losses import SoftmaxLoss, ArcfaceLoss, CosfaceLoss
 from Settings import config
 
 class Trainer(object):
@@ -49,10 +49,13 @@ class Trainer(object):
         return optimizer
 
     def _setup_loss(self):
+        loss_fn = None
         if self.loss_type == 'Softmax':
             loss_fn = SoftmaxLoss()
         elif self.loss_type == 'Arcloss':
             loss_fn = ArcfaceLoss(margin=0.5, scale=64, n_classes=config.NUM_CLASSES)
+        elif self.loss_type == 'Cosloss':
+            loss_fn = CosfaceLoss(margin=0.35, scale=30, n_classes=config.NUM_CLASSES)
         return loss_fn
 
     def _save_weight(self, path_dir):
