@@ -1,7 +1,9 @@
-from math import pi
 import math
+from math import pi
+
 import tensorflow as tf
 import tensorflow.keras.backend as K
+
 
 def SoftmaxLoss():
     """softmax loss"""
@@ -69,7 +71,6 @@ def ArcfaceLoss(margin, scale, n_classes):
         return tf.reduce_mean(losses)
 
     def arcface_loss_v3(y_true, y_pre):
-
         onehot_labels = tf.one_hot(tf.cast(y_true, tf.int32), depth=n_classes)
 
         theta = tf.acos(K.clip(y_pre, -1.0 + K.epsilon(), 1.0 - K.epsilon()))
@@ -82,7 +83,6 @@ def ArcfaceLoss(margin, scale, n_classes):
         return tf.reduce_mean(losses)
 
     def arcface_loss_v4(y_true, y_pre):
-
         cos_t = y_pre
 
         cos_m = tf.identity(math.cos(margin), name='cos_m')

@@ -18,7 +18,7 @@ class ArcHead(tf.keras.layers.Layer):
         self.W = self.add_weight(name='W',
                                  shape=(input_shape[-1], self.units),
                                  dtype=tf.float32,
-                                 initializer= 'glorot_uniform', # tf.keras.initializers.HeNormal(),
+                                 initializer=tf.keras.initializers.HeNormal(),
                                  regularizer=self.kernel_regularizer,
                                  trainable=True)
 
@@ -71,7 +71,8 @@ class ArcFace(tf.keras.layers.Layer):
 
         # add margin
         # clip logits to prevent zero division when backward
-        theta = tf.acos(tf.keras.backend.clip(logits, -1.0 + tf.keras.backend.epsilon(), 1.0 - tf.keras.backend.epsilon()))
+        theta = tf.acos(
+            tf.keras.backend.clip(logits, -1.0 + tf.keras.backend.epsilon(), 1.0 - tf.keras.backend.epsilon()))
         target_logits = tf.cos(theta + self.m)
 
         y = tf.one_hot(tf.cast(y, tf.int32), depth=self.n_classes)  # convert label to onehot
