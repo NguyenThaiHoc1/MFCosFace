@@ -124,7 +124,7 @@ def CosfaceLoss(margin, scale, n_classes):
 
         target_logist = cos_theta - margin
 
-        logist = target_logist * mask + (1 - mask) * y_pred
+        logist = (1 - mask) * y_pred + target_logist * mask
 
         logist *= scale
 

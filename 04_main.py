@@ -64,7 +64,7 @@ def main():
                            save_path=config.CHECKPOINT_NEW_SAVE,
                            logs=config.LOGS_SAVE,
                            model_type=config.MODEL_TYPE,
-                           loss_type='Arcloss')
+                           loss_type='Cosloss')
 
     logging.info("* STEP 4: Loading trainer done.")
 

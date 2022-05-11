@@ -3,6 +3,7 @@
     https://github.com/dsskim/arc_face_tensorflow2/blob/3b776ac0faaef10ec752ed5603673d1bbfc1c1a0/models/loss_layers.py#L4
     https://github.com/yinguobing/arcface/blob/58987e24c2f381cf0e7e3cedbae54e71806a8150/train.py
 
+    https://github.com/4uiiurz1/keras-arcface/blob/877ea00531d74c735354a6cee92788110542196e/metrics.py#L94
 """
 import tensorflow as tf
 
