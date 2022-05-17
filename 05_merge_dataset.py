@@ -7,11 +7,11 @@ from utlis import utlis
 
 
 def merge():
-    dataset_1 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'mask'
+    dataset_1 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'casia_part1' / 'mask'
 
-    dataset_2 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'align'
+    dataset_2 = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'casia_part1' / 'align'
 
-    dataset_merge = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'fujinet' / 'merge'
+    dataset_merge = Path('/Volumes/Ventoy') / 'Data' / 'reprocess' / 'casia_part1' / 'merge'
 
     # check folder
     utlis.check_folder(dataset_merge)

@@ -6,12 +6,12 @@ from Tensorflow.TFRecord import tfrecord
 
 if __name__ == '__main__':
 
-    path_check = False
+    path_check = True
 
     if path_check:
 
         dataset = Path(
-            '/Volumes/Ventoy') / 'Data' / 'data_fujinet'  # config.TRAIN_DATASET_RAW_FOLDER  #  # config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
+            '/Volumes/Ventoy') / 'Data' / 'data_fujinet_v2'  # 'data_fujinet_v2'  # config.TRAIN_DATASET_RAW_FOLDER  #  # config.TRAIN_DATASET_RESULT_FOLDER / 'lfw' / 'merge'
 
         extentions_img = '*.jpg'
         dict_count = {
