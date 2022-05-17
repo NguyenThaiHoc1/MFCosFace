@@ -128,11 +128,9 @@ def CosfaceLoss(margin, scale, n_classes):
 
         logist *= scale
 
-        out = tf.nn.softmax(logist)
-
         y_true = tf.cast(tf.reshape(y_true, [-1]), tf.int32)
 
-        ce = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=out)
+        ce = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y_true, logits=logist)
 
         return tf.reduce_mean(ce)
 
