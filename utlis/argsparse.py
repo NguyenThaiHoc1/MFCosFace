@@ -25,3 +25,12 @@ def parser_test():
     parser.add_argument('--file_pair', type=str, required=True, help='path file pair')
     parser.add_argument('--folder_data', type=str, required=True, help='folder which contains image from pair file')
     return parser.parse_args()
+
+
+def parser_summary_data_fujinet_each_person():
+    parser = argparse.ArgumentParser(description='Parameter for generator Mask.')
+    parser.add_argument('--folder_source_data_path', type=str, required=True,
+                        help='folder which contains all data raw')
+    parser.add_argument('--folder_dist_data_path', type=str, required=True,
+                        help='where contains all data')
+    return parser.parse_args()
