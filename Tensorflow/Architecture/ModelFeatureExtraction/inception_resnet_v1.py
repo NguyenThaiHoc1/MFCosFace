@@ -194,17 +194,19 @@ class InceptionResnetBlock(Model):
             self.spatial_att = SpatialAttention()
 
     def call(self, inputs, training=False, *args, **kwargs):
+
         out = self.inception_res_block(inputs)
 
         out = self.mixed(out)
 
         out = self.up_1(out)
 
+        out = self.up_2([inputs, out])
+
+        # change ----
         if self.attention_module:
             out = self.channel_att(out) * out
             out = self.spatial_att(out) * out
-
-        out = self.up_2([inputs, out])
 
         out = self.bn(out)
 
@@ -369,7 +371,7 @@ class InceptionResNetV1(Model):
                                  activation="relu",
                                  attention_module=True,
                                  name=f"Block35_{idx}")
-            for idx in range(1, 6)
+            for idx in range(1, 5)
         ], name="Block35")
 
         # reduction A
@@ -381,7 +383,7 @@ class InceptionResNetV1(Model):
                                  activation="relu",
                                  attention_module=True,
                                  name=f"Block17_{idx}")
-            for idx in range(1, 11)
+            for idx in range(1, 5)
         ], name="Block17")
 
         # reduction B
@@ -393,7 +395,7 @@ class InceptionResNetV1(Model):
                                  activation="relu",
                                  attention_module=True,
                                  name=f"Block8_{idx}")
-            for idx in range(1, 6)
+            for idx in range(1, 4)
         ], name="Block8")
 
         # Classification block
