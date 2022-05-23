@@ -130,6 +130,7 @@ def _make_mismatches(image_dir: str,
 
 def _clean_images(base: str, folder: str):
     images = os.listdir(os.path.join(base, folder))
+    images = [name for name in images if not name.startswith('.')]
     images = [image for image in images if image.endswith(
         ".jpg") or image.endswith(".png") or image.endswith(".jpeg")]
     return images
@@ -189,7 +190,7 @@ def _parse_arguments() -> Namespace:
     parser.add_argument('--num_matches_mismatches',
                         type=int,
                         required=False,
-                        default=300,
+                        default=30,
                         help='Number of matches/mismatches per fold.')
     return parser.parse_args()
 
