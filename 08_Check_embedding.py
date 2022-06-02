@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from tqdm import tqdm
+
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -40,32 +40,41 @@ def pipline(path_array):
 
 
 if __name__ == '__main__':
-    folder_name_check = 'hoc-nt-mask'
+    folder_name_check = 'hoc-nt-mask_v3'
 
     path_register = Path('/Volumes/Ventoy/Data/face_register') / folder_name_check
 
     path_checked = Path('/Volumes/Ventoy/Data/face_register') # / 'hoc-nt-mask_v1'
 
-    # path_checked = Path('/Volumes/Ventoy/Data/data_fujinet_v2')
+    # path_checked = Path('/Volumes/Ventoy/Data/data_fujinet')
 
     model = loading_model()
 
     for path_re in os.listdir(path_register):
+
+        if path_re[0] == '.':
+            continue
+
         abs_path = path_register / path_re
         np_reprocessed_face = pipline([str(abs_path)])
 
         for person_id in os.listdir(path_checked):
 
+            if person_id[0] == '.':
+                continue
+
             if person_id == folder_name_check:
                 continue
 
-            # if not person_id == 'hoc-nt':
+            # if not person_id == 'khanh-td':
             #     continue
 
             list_numpy_compare = []
             path_person_id = path_checked / person_id
 
             for path_check in os.listdir(path_person_id):
+                if path_check[0] == '.':
+                    continue
                 abs_path_regis = path_person_id / path_check
                 list_numpy_compare.append(str(abs_path_regis))
 
@@ -79,5 +88,5 @@ if __name__ == '__main__':
 
             mean_rec = np.mean(dist)
 
-            if mean_rec < 1.2:
+            if mean_rec < 1.4:
                 print(f"{person_id} -- {mean_rec}")
