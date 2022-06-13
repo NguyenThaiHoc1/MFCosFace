@@ -201,12 +201,11 @@ class InceptionResnetBlock(Model):
 
         out = self.up_1(out)
 
-        out = self.up_2([inputs, out])
-
-        # change ----
         if self.attention_module:
             out = self.channel_att(out) * out
             out = self.spatial_att(out) * out
+
+        out = self.up_2([inputs, out])
 
         out = self.bn(out)
 
@@ -218,8 +217,9 @@ class InceptionResnetBlock(Model):
 
 class ReductionBlockA(Model):
 
-    def __init__(self, name):
+    def __init__(self, name, attention_module=True):
         super(ReductionBlockA, self).__init__(name=name)
+        self.attention_module = attention_module
         channel_axis = 1 if K.image_data_format() == 'channels_first' else 3
 
         # branch 1
@@ -239,6 +239,10 @@ class ReductionBlockA(Model):
         # Concatenate
         self.concatenate = Concatenate(axis=channel_axis)
 
+        if self.attention_module:
+            self.channel_att = ChannelAttention(in_planes=896)
+            self.spatial_att = SpatialAttention()
+
     def call(self, inputs, training=False, *args, **kwargs):
         out1 = self.reduction_1(inputs)
 
@@ -249,13 +253,20 @@ class ReductionBlockA(Model):
         out3 = self.reduction_pooling_1(inputs)
 
         out = self.concatenate([out1, out2, out3])
+
+        if self.attention_module:
+            out = self.channel_att(out) * out
+            out = self.spatial_att(out) * out
+
         return out
 
 
 class ReductionBlockB(Model):
 
-    def __init__(self, name):
+    def __init__(self, name, attention_module=True):
         super(ReductionBlockB, self).__init__(name=name)
+        self.attention_module = attention_module
+
         channel_axis = 1 if K.image_data_format() == 'channels_first' else 3
 
         # branch 1
@@ -288,6 +299,10 @@ class ReductionBlockB(Model):
         # Concatenate
         self.concatenate = Concatenate(axis=channel_axis)
 
+        if self.attention_module:
+            self.channel_att = ChannelAttention(in_planes=1792)
+            self.spatial_att = SpatialAttention()
+
     def call(self, inputs, training=False, *args, **kwargs):
         out1 = self.reduction_0_0(inputs)
         out1 = self.reduction_0_1(out1)
@@ -302,6 +317,11 @@ class ReductionBlockB(Model):
         out4 = self.reduction_pooling_1(inputs)
 
         out = self.concatenate([out1, out2, out3, out4])
+
+        if self.attention_module:
+            out = self.channel_att(out) * out
+            out = self.spatial_att(out) * out
+
         return out
 
 
@@ -375,7 +395,7 @@ class InceptionResNetV1(Model):
         ], name="Block35")
 
         # reduction A
-        self.reduction_blockA = ReductionBlockA(name="ReductionA")
+        self.reduction_blockA = ReductionBlockA(name="ReductionA", attention_module=True)
 
         # 10x Block17 (Inception-ResNet-B block)
         self.block17 = Sequential([
@@ -387,7 +407,7 @@ class InceptionResNetV1(Model):
         ], name="Block17")
 
         # reduction B
-        self.reduction_blockB = ReductionBlockB(name="ReductionB")
+        self.reduction_blockB = ReductionBlockB(name="ReductionB", attention_module=True)
 
         # 5x Block8 (Inception-ResNet-C block)
         self.block8 = Sequential([
@@ -448,8 +468,8 @@ if __name__ == '__main__':
                               embedding_size=config.EMBEDDING_SIZE,
                               model_type='ArcHead',
                               name="InceptionResNetV1")
-    # model.build(input_shape=(None, 299, 299, 3), )
-    # model.summary()
+    model.build(input_shape=(None, 299, 299, 3))
+    model.summary()
 
     # demo get layer
     # layer = utlis.get_layer_byname(model,
