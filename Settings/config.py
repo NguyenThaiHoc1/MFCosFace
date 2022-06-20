@@ -37,3 +37,7 @@ BATCH_SIZE = 128
 MAX_EPOCHS = 1000
 
 LEARNING_RATE = 1e-3
+
+#########################
+
+DLIB_LANDMARK_MODEL = BASE_DIR / 'Model' / 'shape_predictor_68_face_landmarks.dat'
