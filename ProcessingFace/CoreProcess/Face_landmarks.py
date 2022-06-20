@@ -2,6 +2,7 @@ import dlib
 import face_alignment
 import numpy as np
 import tensorflow as tf
+from Settings import config
 
 
 def shape_to_landmarks(shape):
@@ -119,7 +120,7 @@ class FaceLandmark(object):
     def __init__(self, landmark='dlib'):
         self.landmark = landmark
         if landmark == 'dlib':
-            self.aligner = dlib.shape_predictor(path_to_dlib_model)
+            self.aligner = dlib.shape_predictor(config.DLIB_LANDMARK_MODEL)
         else:
             self.aligner = face_alignment.FaceAlignment(
                 face_alignment.LandmarksType._2D,
