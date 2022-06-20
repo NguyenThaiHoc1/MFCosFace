@@ -481,7 +481,7 @@ def mask_face(image, face_location, six_points, angle, args, mask_type="surgical
         cfg = read_cfg(config_filename="./Pluggins/face_generate_mask/masks.cfg", mask_type=mask_str, verbose=False)
 
     img = cv2.imread(cfg.template, cv2.IMREAD_UNCHANGED)
-    # img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
+    img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
 
     #     # Process the mask if necessary
     #     if args["pattern"]:

@@ -121,7 +121,6 @@ def main():
         os.makedirs(path_result_mask)
 
     pipeline = PipelineFace(output_size=128)
-
     pipeline_mask = PipelineMaskTheFace()
 
     # Loading dataset
@@ -156,29 +155,29 @@ def main():
             os.makedirs(align_save_path)
 
         try:
+            should_align = True
 
-            face = pipeline(np_image)
+            if args.check_mask:
+                list_type_mask = ['cloth', 'surgical', 'surgical_blue']
+                abs_path_id_mask = path_result_mask / name_folder
+                if not abs_path_id_mask.exists():
+                    os.makedirs(abs_path_id_mask)
 
-            if not args.check_mask:
-                break
+                for type_mask in list_type_mask:
+                    list_face_mask, _, _, _ = pipeline_mask.active(np_image, mask_type=type_mask)
+                    base_filename_mask = f'mask-{type_mask}_' + file_name + '.jpg'
+                    """
+                        alignment when apply mask to face 
+                    """
+                    if should_align:
+                        abs_path_mask_filename = abs_path_id_mask / Path('aligned_' + base_filename_mask)
+                        face = pipeline(list_face_mask[0])
+                        plt.imsave(abs_path_mask_filename, face[0])
+                    else:
+                        abs_path_mask_filename = abs_path_id_mask / base_filename_mask
+                        plt.imsave(abs_path_mask_filename, list_face_mask[0])
 
-            list_type_mask = ['cloth', 'surgical', 'surgical_blue']
-
-            abs_path_id_mask = path_result_mask / name_folder
-
-            if not abs_path_id_mask.exists():
-                os.makedirs(abs_path_id_mask)
-
-            for type_mask in list_type_mask:
-                list_face_mask, _, _, _ = pipeline_mask.active(face[0], mask_type=type_mask)
-
-                base_filename_mask = f'mask-{type_mask}_' + file_name + '.jpg'
-
-                abs_path_mask_filename = abs_path_id_mask / base_filename_mask
-
-                plt.imsave(abs_path_mask_filename, list_face_mask[0])
-
-            plt.imsave(new_filename_align, face[0])
+            # plt.imsave(new_filename_align, face[0])
 
         except Exception as ex:
             logging.info(f"Error: {name_folder} - {abs_path}")
