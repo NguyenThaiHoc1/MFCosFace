@@ -10,7 +10,7 @@ class PipelineMaskTheFace(object):
         self.detector = FaceDetection()
 
         # step 2: landmark
-        self.landmark = FaceLandmark()
+        self.landmark = FaceLandmark(landmark='dlib')
 
         # step 3: convert landmark ==> dictionary details
         self.convert_landmark = shape_to_landmarks
@@ -34,11 +34,9 @@ class PipelineMaskTheFace(object):
         mask = []
         for bbox in bboxes:
 
-            bbox = parse_face(bbox)
+            bbox = parse_face(bbox)  # top, left, bottom, right
 
             landmarks = self.landmark.active(img, bbox)
-
-            # mask the face
 
             new_shape_landmark = shape_to_landmarks(landmarks[0])
 
