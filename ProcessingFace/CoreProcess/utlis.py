@@ -10,11 +10,13 @@ from numpy.linalg import eig, inv
 
 
 def rect_to_bb(rect):
-    xmin, ymin, xmax, ymax = rect
-    x1 = xmin
-    x2 = xmax
-    y1 = ymin
-    y2 = ymax
+    xmin, ymin, xmax, ymax = rect  # top, left, bottom, right
+
+    x1 = ymin  # left
+    x2 = ymax  # right
+    y1 = xmin  # top
+    y2 = xmax  # bottom
+
     return (x1, x2, y2, x1)
 
 
@@ -379,7 +381,7 @@ def parse_face(bbox):
     ymin = y
     xmax = xmin + w
     ymax = ymin + h
-    return xmin, ymin, xmax, ymax
+    return xmin, ymin, xmax, ymax  # top, left, bottom, right
 
 
 def transform_points(points, mat, invert=False):
@@ -479,7 +481,7 @@ def mask_face(image, face_location, six_points, angle, args, mask_type="surgical
         cfg = read_cfg(config_filename="./Pluggins/face_generate_mask/masks.cfg", mask_type=mask_str, verbose=False)
 
     img = cv2.imread(cfg.template, cv2.IMREAD_UNCHANGED)
-    img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
+    # img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
 
     #     # Process the mask if necessary
     #     if args["pattern"]:

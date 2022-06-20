@@ -1,3 +1,4 @@
+import dlib
 import face_alignment
 import numpy as np
 import tensorflow as tf
@@ -98,21 +99,46 @@ def shape_to_landmarks(shape):
     return face_landmarks
 
 
+path_to_dlib_model = "D:\hoc-nt\MFCosFace\Model\shape_predictor_68_face_landmarks.dat"
+
+
+def shape_to_np(shape, dtype="int"):
+    # initialize the list of (x, y)-coordinates
+    coords = np.zeros((shape.num_parts, 2), dtype=dtype)
+
+    # loop over all facial landmarks and convert them
+    # to a 2-tuple of (x, y)-coordinates
+    for i in range(0, shape.num_parts):
+        coords[i] = (shape.part(i).x, shape.part(i).y)
+
+    # return the list of (x, y)-coordinates
+    return coords
+
+
 class FaceLandmark(object):
-    def __init__(self):
-        self.aligner = face_alignment.FaceAlignment(
-            face_alignment.LandmarksType._2D,
-            device='cuda' if tf.test.is_gpu_available() else 'cpu',
-            face_detector='blazeface', )
+    def __init__(self, landmark='dlib'):
+        self.landmark = landmark
+        if landmark == 'dlib':
+            self.aligner = dlib.shape_predictor(path_to_dlib_model)
+        else:
+            self.aligner = face_alignment.FaceAlignment(
+                face_alignment.LandmarksType._2D,
+                device='cuda' if tf.test.is_gpu_available() else 'cpu',
+                face_detector='blazeface')
 
     def active(self, image, bbox):
         # clone object
         clone_np_image = image.copy()
 
-        # convert bbox
-        np_box = np.array(bbox)
-        np_box.astype(int)
-
         # get landmarks
-        points = self.aligner.get_landmarks(clone_np_image, detected_faces=[np_box])
+        if self.landmark == 'dlib':
+            np_box = np.array(bbox)  # top, left, bottom, right
+            left, top, right, bottom = np_box[1], np_box[0], np_box[3], np_box[2]
+            bbox = dlib.rectangle(left, top, right, bottom)
+            points = self.aligner(image, bbox)
+            points = shape_to_np(points)[np.newaxis, :]
+        else:
+            np_box = np.array(bbox)
+            np_box.astype(int)
+            points = self.aligner.get_landmarks(clone_np_image, detected_faces=[np_box])
         return points
