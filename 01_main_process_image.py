@@ -82,18 +82,13 @@ class ImageClass(object):
 
 
 def test():
-    pipeline = PipelineFace(output_size=128)
-    image = ImageClass(filepath='./Dataset/raw/lfw/Saddam_Hussein/Saddam_Hussein_0008.jpg')
-    face = pipeline(image.np_image)
-    plt.imshow(face[0])
-    plt.show()
-
+    pipeline = PipelineFace(output_size=160)
     pipeline_mask = PipelineMaskTheFace()
-
-    list_face_mask, _, _, _ = pipeline_mask.active(face[0], mask_type='surgical')
-
-    plt.imshow(list_face_mask[0])
-    plt.show()
+    image = ImageClass(filepath=r'D:\hoc-nt\MFCosFace\Dataset\raw\mfr2\AdrianDunbar\AdrianDunbar_0002.png')
+    list_face_mask, _, _, _ = pipeline_mask.active(image.np_image, mask_type='surgical')
+    face = pipeline(list_face_mask[0])
+    img = cv2.cvtColor(face[0], cv2.COLOR_BGR2RGB)
+    cv2.imwrite(r'./test.png', img)
 
 
 def main():
