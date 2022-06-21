@@ -19,7 +19,8 @@ class Trainer(object):
                  max_epochs, steps, learning_rate,
                  logs, save_path, tensorboard_path,
                  model_type,
-                 loss_type):
+                 loss_type,
+                 path_test):
         self.loader = loader
         self.model = model
         self.loss_type = loss_type
@@ -33,6 +34,7 @@ class Trainer(object):
         self.logs = logs
         self.save_path = save_path
         self.tensorboard_path = tensorboard_path
+        self.path_test_pkl = path_test
 
         # -------- setting up hyper parameter -------
         self.optimizer = None
@@ -55,7 +57,7 @@ class Trainer(object):
         elif self.loss_type == 'Arcloss':
             loss_fn = ArcfaceLoss(margin=0.5, scale=64, n_classes=config.NUM_CLASSES)
         elif self.loss_type == 'Cosloss':
-            loss_fn = CosfaceLoss(margin=0.35, scale=30, n_classes=config.NUM_CLASSES)
+            loss_fn = CosfaceLoss(margin=0.5, scale=64, n_classes=config.NUM_CLASSES)
         return loss_fn
 
     def _save_weight(self, path_dir):
@@ -105,6 +107,44 @@ class Trainer(object):
         mean_loss = tf.reduce_mean(cast_list_loss)
         return mean_loss
 
+    def evalute(self):
+        """
+            we need to evaluate model with condition like:
+             - precision
+             - recall
+             - accuracy * <=== that is important
+
+            setup code:
+              need:
+                - file_pairs.txt : contains label each person and cases
+                - folder data : contains image data to read <-- replace to file tfrecords
+
+        """
+
+        from utlis.joblib_compress import DataSerializer
+        from utlis.evalute import evalute, evaluate_lfw
+        import numpy as np
+
+        serializer = DataSerializer()
+        serializer.load(path_name=self.path_test_pkl)
+        data, label = serializer.get_info()
+
+        # EVALUATE
+        distances, labels = evalute(embedding_size=config.EMBEDDING_SIZE,
+                                    batch_size=config.BATCH_SIZE,
+                                    model=self.model,
+                                    carray=data, issame=label)
+
+        metrics = evaluate_lfw(distances=distances, labels=labels)
+
+        dict_result_test = {
+            'accuracy': np.mean(metrics['accuracy']),
+            'precision': np.mean(metrics['precision']),
+            'recall': np.mean(metrics['recall']),
+        }
+
+        return dict_result_test
+
     def training(self):
         self.optimizer = self._setup_optimizer()
         self.loss_fn = self._setup_loss()
@@ -121,7 +161,7 @@ class Trainer(object):
             print(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
 
             # saving checkpoint
-            if not self.current_epochs % 30:
+            if not self.current_epochs % 2:
                 name_save = 'e_{}_b_{}.ckpt'.format(self.current_epochs,
                                                     self.steps % self.loader.steps_per_epoch_train)
                 path_save = self.save_path / name_save
@@ -134,6 +174,19 @@ class Trainer(object):
 
             # writen logs
             logging.info(verb_str.format('TRAIN', self.current_epochs, self.max_epochs, loss_train))
+
+            # evaluate
+            if not self.current_epochs % 5:
+                dict_result = self.evalute()
+                verb_str_test = ">>> {} Epoch {}/{}: accuracy={:.4f} precision={:.4f} recall={:.4f}"
+                print(verb_str_test.format('TEST', self.current_epochs, self.max_epochs,
+                                           dict_result['accuracy'],
+                                           dict_result['precision'],
+                                           dict_result['recall']))
+                logging.info(verb_str_test.format('TEST', self.current_epochs, self.max_epochs,
+                                                  dict_result['accuracy'],
+                                                  dict_result['precision'],
+                                                  dict_result['recall']))
 
             # updating step and current epochsteps_per_epoch
             self.current_epochs = self.steps // self.loader.steps_per_epoch_train + 1

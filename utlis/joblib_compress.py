@@ -1,14 +1,6 @@
 import joblib
 
 
-def load_joblib_from_file(path):
-    return joblib.load(path)
-
-
-def compress_joblib_to_file(path, value):
-    return joblib.dump(value, path)
-
-
 class DataSerializer(object):
 
     def __init__(self):
@@ -47,6 +39,3 @@ class DataSerializer(object):
             raise NotImplementedError
 
         print("Loading data and label is successfully.")
-
-
-
