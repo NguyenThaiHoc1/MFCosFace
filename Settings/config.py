@@ -41,3 +41,7 @@ LEARNING_RATE = 1e-3
 #########################
 
 DLIB_LANDMARK_MODEL = BASE_DIR / 'Model' / 'shape_predictor_68_face_landmarks.dat'
+
+######################## TEST
+
+PATH_TEST_PKL = BASE_DIR / 'Dataset' / 'compress_test' / 'test_mfr2.pkl'
